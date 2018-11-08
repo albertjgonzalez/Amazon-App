@@ -1,0 +1,23 @@
+{
+  "name": "amazon-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albertjgonzalez/Amazon-App.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/albertjgonzalez/Amazon-App/issues"
+  },
+  "homepage": "https://github.com/albertjgonzalez/Amazon-App#readme",
+  "dependencies": {
+    "inquirer": "^6.2.0",
+    "mysql": "^2.16.0"
+  }
+}
