@@ -9,5 +9,4 @@ CREATE TABLE products(
  PRIMARY KEY(id)
 );
 
-
 SELECT * FROM products;

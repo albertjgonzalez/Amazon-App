@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
+const Table = require("terminal-table");
 
 const connection = mysql.createConnection({
     host: "localHOST",
@@ -10,7 +11,7 @@ const connection = mysql.createConnection({
 });
 
 const managerInquire = () => {
-    inquirer
+ inquirer
         .prompt({
             type: 'list',
             message: 'What would you like to do?',
@@ -37,31 +38,42 @@ const managerInquire = () => {
 
 const displayDB = () => {
     connection.query('SELECT * FROM products', (err, data) => {
+        const t = new Table();
         if (err) throw err;
-        console.log('id     product_name     department_name     price     stock_quanity')
-        console.log('--     ------------     ---------------     -----     -------------')
+        t.push(
+            ['id', 'product_name', 'department_name', 'price', 'stock_quanity']
+        )
         for (var i = 0; i < data.length; i++) {
-            console.log(data[i].id + '     ' + data[i].product_name + '     ' + data[i].department_name + '     ' + data[i].price + '     ' + data[i].stock_quanity)
+            t.push(
+                [data[i].id , data[i].product_name, data[i].department_name, data[i].price , + data[i].stock_quanity]
+            )
         }
+        console.log("" + t);
     });
 };
 
 async function displayLow () {
     await connection.query('SELECT * FROM products WHERE stock_quanity <= 5', (err, data) => {
         if (err) throw err;
-        console.log('id     product_name     department_name     price     stock_quanity')
-        console.log('--     ------------     ---------------     -----     -------------')
+        const t2 = new Table();
+        t2.push(
+            ['id', 'product_name', 'department_name', 'price', 'stock_quanity']
+        )
         for (var i = 0; i < data.length; i++) {
-            console.log(data[i].id + '     ' + data[i].product_name + '     ' + data[i].department_name + '     ' + data[i].price + '     ' + data[i].stock_quanity)
+            t2.push(
+                [data[i].id , data[i].product_name, data[i].department_name, data[i].price , + data[i].stock_quanity]
+            )
         }
+        console.log("" + t2);
         managerInquire();
     });
 };
 
-const AddToInventory = () =>{ 
-displayDB();
-inquirer
-.prompt({
+function AddToInventory () { 
+ displayDB()
+    inquirer
+.prompt([
+    {
     type:'input',
     message:'Enter the ID of the product you would like to add',
     name:'ID'
@@ -70,16 +82,58 @@ inquirer
     type:'input',
     message:'How many would you like to add?',
     name:'amount'
-})
+}
+])
 .then(answers=>{
-    console.log(answers.ID);
-    console.log(answers.amount);
-})
+    var amount = answers.amount
+    var id = answers.ID
+    query = 'UPDATE products SET stock_quanity = stock_quanity + ? WHERE id = ?'
+    connection.query(query,[amount,id], (err,data) => {
+        if (err){console.log(err)}
+        displayDB();
+        managerInquire();
+    } )
+});
+
+
 };
 
-const AddNewProduct = () => {
+const AddNewProduct = () =>{ 
+        inquirer
+    .prompt([
+        {
+        type:'input',
+        message:'Enter the name of the product you would like to add',
+        name:'name'
+    },
+    {
+        type:'input',
+        message:'What department does this item belong in?',
+        name:'department'
+    },
+    {
+        type:'input',
+        message:'Enter the price of the item',
+        name:'price'
+    },
+    {
+        type:'input',
+        message:'How many would you like to add?',
+        name:'amount'
+    }
+    ])
+    .then(answers=>{
+        var name = answers.name
+        var department = answers.department
+        var price = answers.price
+        var amount = answers.amount
+        query = 'INSERT INTO products (product_name, department_name, price, stock_quanity) VALUES (?,?,?,?)'
+        connection.query(query, [name,department,price,amount],(err,data) => {
+            if (err){console.log(err)}
+            displayDB();
+            managerInquire();
+        } )
+    })
+    };
 
-};
-
-displayDB();
 managerInquire();

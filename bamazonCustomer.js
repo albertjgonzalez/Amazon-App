@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const Table = require("terminal-table");
+const t = new Table();
 
 const connection = mysql.createConnection({
     host: "localHOST",
@@ -54,11 +56,17 @@ const updateDatabase = (productID, quanity) => {
 const displayDB = () => {
     connection.query('SELECT * FROM products', (err, data) => {
         if (err) throw err;
-        console.log('id     product_name     department_name     price     stock_quanity')
-        console.log('--     ------------     ---------------     -----     -------------')
+
+        t.push(
+            ["id", "product_name", "department_name", "price", "stock_quanity"]
+        );
+
         for (var i = 0; i < data.length; i++) {
-            console.log(data[i].id + '     ' + data[i].product_name + '     ' + data[i].department_name + '     ' + data[i].price + '     ' + data[i].stock_quanity)
+            t.push(
+                [data[i].id , data[i].product_name, data[i].department_name, data[i].price , + data[i].stock_quanity]
+            )
         }
+        console.log("" + t);
         customerInquire();
     });
 }
